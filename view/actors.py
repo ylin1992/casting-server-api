@@ -89,3 +89,20 @@ def patch_actor(actor_id):
         'success': True,
         'actor': actor.format()
     })
+
+@actors_route.route('/<int:actor_id>/movies')
+def get_movies_by_actor_id(actor_id):
+    actor = Actor.query.filter_by(id=actor_id).one_or_none()
+    if actor is None:
+        abort(404)
+    
+    try:
+        movies = [m.id for m in actor.movies]
+    except Exception as e:
+        print(e)
+        abort(422)
+    
+    return jsonify({
+        "success": True,
+        "movies_id": movies
+    })

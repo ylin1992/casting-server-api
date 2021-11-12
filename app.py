@@ -7,12 +7,17 @@ from view.error_handler import error_handler
 # --------------------------
 # initailize app
 # --------------------------
-app = Flask(__name__)
-setup_db(app)
-CORS(app)
-app.register_blueprint(movies_route, url_prefix='/movies')
-app.register_blueprint(actors_route, url_prefix='/actors')
-app.register_blueprint(error_handler)
+
+def create_app():
+    app = Flask(__name__)
+    setup_db(app)
+    CORS(app)
+    app.register_blueprint(movies_route, url_prefix='/movies')
+    app.register_blueprint(actors_route, url_prefix='/actors')
+    app.register_blueprint(error_handler)
+    return app
+
+app = create_app()
 
 if __name__ == '__main__':
     app.run(debug=True)
