@@ -70,6 +70,7 @@ class Movie(db.Model):
         return {
         'id': self.id,
         'title': self.title,
+        'release_date': self.release_date,
         'actors_id': [actor.id for actor in self.actors]
     }
     
@@ -97,11 +98,6 @@ class Actor(db.Model):
     # gender: many-to-one relationship
     gender_id = Column(Integer, ForeignKey('Gender.id'))
     
-    # foreign key
-    # movies = db.relationship('Movie',
-    #                          secondary=actors_movies,
-    #                          backref=db.backref('actors', lazy=True)
-    #                          )
     
     # methods
     def format(self):

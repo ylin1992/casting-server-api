@@ -11,17 +11,14 @@ def add_gender():
 def sample_movie():
     return [
         {
-            "id": 1,
             "title": 'm1',
             "release_date": '2019-05-21T21:30:00.000Z',
         },
         {
-            "id": 2,
             "title": 'm2',
             "release_date": '2019-05-22T21:30:00.000Z',
         },
         {
-            "id": 3,
             "title": 'm3',
             "release_date": '2019-05-23T21:30:00.000Z',
         },
@@ -30,19 +27,16 @@ def sample_movie():
 def sample_actors():
     return [
         {
-            "id":1,
             "name": 'a1',
             "age": 10,
             "gender_id": 1
         },
         {
-            "id":2,
             "name": 'a2',
             "age": 20,
             "gender_id": 2
         },
         {
-            "id":3,
             "name": 'a3',
             "age": 30,
             "gender_id": 1
@@ -56,24 +50,24 @@ if __name__ == '__main__':
         Actor.query.delete()
         Movie.query.delete()
         for a in sample_actors():
-            actor = Actor(id=a['id'],
-                          name=a['name'],
+            actor = Actor(name=a['name'],
                           age=a['age'],
                           gender_id=a['gender_id'])
             actor.insert()
         
         for m in sample_movie():
-            movie = Movie(id=m['id'],
-                          title=m['title'],
+            movie = Movie(title=m['title'],
                           release_date=m['release_date'])
             movie.insert()
         
         # add relationship
-        movie1 = Movie.query.get(1)
-        movie1.actors.append(Actor.query.get(1))
-        movie1.actors.append(Actor.query.get(2))
-        movie2 = Movie.query.get(2)
-        movie2.actors.append(Actor.query.get(1))
-        movie2.actors.append(Actor.query.get(3))
+        actors = Actor.query.all()
+        movies = Movie.query.all()
+        movie1 = movies[0]
+        movie1.actors.append(actors[0])
+        movie1.actors.append(actors[1])
+        movie2 = movies[1]
+        movie2.actors.append(actors[0])
+        movie2.actors.append(actors[1])
         db.session.commit()
-        print(Actor.query.get(1).movies)
+        print(actors[0].movies)
