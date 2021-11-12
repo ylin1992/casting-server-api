@@ -17,14 +17,14 @@ def setup_db(app):
 
 gender_actors = Table('gender_actors',
                       db.Model.metadata,
-                      Column('gender_id', Integer, ForeignKey('Gender.id')),
-                      Column('actor_id', Integer, ForeignKey('Actor.id')),
+                      Column('gender_id', Integer, ForeignKey('Gender.id', ondelete='cascade'), primary_key=True),
+                      Column('actor_id', Integer, ForeignKey('Actor.id', ondelete='cascade'), primary_key=True),
                       )
 
 actors_movies = Table('actors_movies',
                       db.Model.metadata,
-                      Column('actor_id', Integer, ForeignKey('Actor.id')),
-                      Column('movie_id', Integer, ForeignKey('Movie.id')),
+                      Column('actor_id', Integer, ForeignKey('Actor.id', ondelete='cascade'), primary_key=True),
+                      Column('movie_id', Integer, ForeignKey('Movie.id', ondelete='cascade'), primary_key=True),
                       )
 
 class Gender(db.Model):
@@ -48,6 +48,7 @@ class Gender(db.Model):
         
     def update(self):
         db.session.commit()
+        
 
 class Movie(db.Model):
     # Movies with attributes title and release date
@@ -65,6 +66,13 @@ class Movie(db.Model):
                              )
     
     # methods
+    def format(self):
+        return {
+        'id': self.id,
+        'title': self.title,
+        'actors_id': [actor.id for actor in self.actors]
+    }
+    
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -76,6 +84,8 @@ class Movie(db.Model):
     def update(self):
         db.session.commit()
     
+    def __repr__(self):
+        return str(self.format())
     
 class Actor(db.Model):
     # Actors with attributes name, age and gender
@@ -83,17 +93,25 @@ class Actor(db.Model):
     
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
-
+    age = Column(Integer, nullable=False)
     # gender: many-to-one relationship
     gender_id = Column(Integer, ForeignKey('Gender.id'))
     
     # foreign key
-    movies = db.relationship('Movie',
-                             secondary=actors_movies,
-                             backref=db.backref('actors', lazy=True)
-                             )
+    # movies = db.relationship('Movie',
+    #                          secondary=actors_movies,
+    #                          backref=db.backref('actors', lazy=True)
+    #                          )
     
     # methods
+    def format(self):
+        return {
+            'id': self.id,
+            'name': self.name,
+            'gender': (Gender.query.get(self.gender_id)).name,
+            'movies_id': [movie.id for movie in self.movies]
+        }
+    
     def insert(self):
         db.session.add(self)
         db.session.commit()
@@ -104,4 +122,7 @@ class Actor(db.Model):
         
     def update(self):
         db.session.commit()
+        
+    def __repr__(self):
+        return str(self.format())
     
