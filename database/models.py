@@ -10,7 +10,7 @@ def setup_db(app, database_path=SQLALCHEMY_DATABASE_URI):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)
-    
+    return db
 # ------------------------------------------------------------
 # tables
 # ------------------------------------------------------------
@@ -105,7 +105,8 @@ class Actor(db.Model):
             'id': self.id,
             'name': self.name,
             'gender': (Gender.query.get(self.gender_id)).name,
-            'movies_id': [movie.id for movie in self.movies]
+            'age': self.age,
+            'movies': [movie.id for movie in self.movies]
         }
     
     def insert(self):

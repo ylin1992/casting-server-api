@@ -22,6 +22,26 @@ def sample_movie():
             "title": 'm3',
             "release_date": '2019-05-23T21:30:00.000Z',
         },
+        {
+            "title": 'm4',
+            "release_date": '2019-05-23T21:30:00.000Z',
+        },
+        {
+            "title": 'm5',
+            "release_date": '2019-05-21T21:30:00.000Z',
+        },
+        {
+            "title": 'm6',
+            "release_date": '2019-05-22T21:30:00.000Z',
+        },
+        {
+            "title": 'm7',
+            "release_date": '2019-05-23T21:30:00.000Z',
+        },
+        {
+            "title": 'm8',
+            "release_date": '2019-05-23T21:30:00.000Z',
+        },
     ]
 
 def sample_actors():

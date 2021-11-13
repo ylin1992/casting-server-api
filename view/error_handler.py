@@ -45,6 +45,14 @@ def unauthorized(error):
         "error": 401,
         "message": "unauthorized"
     }), 401
+    
+@error_handler.app_errorhandler(405)
+def method_not_allowed(error):
+    return jsonify({
+        "success": False,
+        "error": 405,
+        "message": "method not allowed"
+    }), 405
 
 # @app.errorhandler(AuthError)
 # def process_AuthError(error):
