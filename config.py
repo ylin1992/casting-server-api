@@ -1,5 +1,4 @@
-import os 
-
+import os
 def modify_database_url(database_path):
     if database_path is None:
         return None
@@ -19,3 +18,13 @@ if DEV_LEVEL == 'LOCAL':
 else:
     database_path = os.environ['DATABASE_URL']
     SQLALCHEMY_DATABASE_URI = modify_database_url(database_path)
+    
+
+AUTH0_DOMAIN = os.getenv('AUTH0_DOMAIN', 'dev-artpgixt.us.auth0.com')
+ALGORITHMS = ['RS256']
+API_AUDIENCE = os.getenv('API_AUDIENCE', 'casting-api')
+AUTH_INFO = {
+    'AUTH0_DOMAIN': AUTH0_DOMAIN,
+    'ALGORITHMS': ALGORITHMS,
+    'API_AUDIENCE': API_AUDIENCE
+}

@@ -2,11 +2,13 @@ from operator import ge
 from database.models import Actor, Movie, Gender
 from flask import Blueprint, abort, jsonify, request, current_app
 from database import utils
+from auth.auth import requires_auth
 
 actors_route = Blueprint('actors_route', __name__)
 
 @actors_route.route('', methods=['GET'])
-def get_actors():
+@requires_auth(permission='get:actors')
+def get_actors(jwt):
     actors = Actor.query.all()
     if (actors is None):
         abort(404)
@@ -16,7 +18,8 @@ def get_actors():
         })
 
 @actors_route.route('/<int:actor_id>', methods=['GET'])
-def get_actor_by_id(actor_id):
+@requires_auth(permission='get:actors')
+def get_actor_by_id(jwt, actor_id):
     actor = Actor.query.filter_by(id=actor_id).one_or_none()
     if actor is None:
         abort(404)
@@ -26,7 +29,8 @@ def get_actor_by_id(actor_id):
         })
 
 @actors_route.route('/<int:actor_id>', methods=['DELETE'])
-def delete_actor_by_id(actor_id):
+@requires_auth(permission='delete:actor')
+def delete_actor_by_id(jwt, actor_id):
     actor = Actor.query.filter_by(id=actor_id).one_or_none()
     if actor is None:
         abort(404)
@@ -41,7 +45,8 @@ def delete_actor_by_id(actor_id):
     })
 
 @actors_route.route('', methods=['POST'])
-def post_request_actor():
+@requires_auth(permission='post:actor')
+def post_request_actor(jwt):
     data = request.get_json()
     current_app.logger.info('Receving POST request: ' , data)
     if 'name' not in data or 'age' not in data or 'gender' not in data:

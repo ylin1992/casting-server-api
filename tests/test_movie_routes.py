@@ -6,7 +6,8 @@ from flask import Flask
 import json
 from app import create_app
 from database.models import setup_db, Actor, Movie, Gender
-
+from .unit_test_config import ASSITSTANT_TOKEN, ASSISTANT_AUTH_HEADER, DIRECTOR_AUTH_HEADER, DIRECTOR_TOKEN, PRODCUER_AUTH_HEADER, PRODUCER_TOKEN
+import datetime
 
 class TestCastingApi(unittest.TestCase):
 
@@ -33,62 +34,62 @@ class TestCastingApi(unittest.TestCase):
     # ------------------------------------------------------------------ 
     # actors: GET
     # ------------------------------------------------------------------ 
-    def test_get_all_actors(self):
-        res = self.client().get('/actors')
+    def test_get_all_movies(self):
+        res = self.client().get('/movies', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
-        expected = Actor.query.all()
+        expected = Movie.query.all()
         
         self.assertEqual(res.status_code, 200)
-        self.assertTrue('actors' in data)
-        self.assertEqual(len(data['actors']), len(expected))
+        self.assertTrue('movies' in data)
+        self.assertEqual(len(data['movies']), len(expected))
         self.assertTrue(data['success'])
 
-    def test_empty_actors(self):
+    def test_empty_movies(self):
         with self.app.app_context():
             self.drop_data()
             self.db.session.commit()
-            res = self.client().get('/actors')
+            res = self.client().get('/movies', headers=PRODCUER_AUTH_HEADER)
             data = json.loads(res.data)
             
             self.assertEqual(res.status_code, 200)
-            self.assertTrue('actors' in data)
-            self.assertEqual(len(data['actors']), 0)
+            self.assertTrue('movies' in data)
+            self.assertEqual(len(data['movies']), 0)
             self.assertTrue(data['success'])
             
-    def test_200_get_actors_by_existing_id(self):
-        res = self.client().get('/actors/3')
+    def test_200_get_movies_by_existing_id(self):
+        res = self.client().get('/movies/3', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
     
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
-        self.assertTrue('actor' in data)
-        self.assertEqual(data['actor']['id'], 3)
+        self.assertTrue('movie' in data)
+        self.assertEqual(data['movie']['id'], 3)
         
-    def test_404_get_actor_with_unknown_id(self):
-        res = self.client().get('/actors/100')
+    def test_404_get_movie_with_unknown_id(self):
+        res = self.client().get('/movies/100', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 404)
         self.assertFalse(data['success'])
     
-    def test_404_get_actor_with_invalid_query(self):
-        res = self.client().get('/actors/ghjhglkshglkjs')
+    def test_404_get_movie_with_invalid_query(self):
+        res = self.client().get('/actors/ghjhglkshglkjs', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 404)
         self.assertFalse(data['success'])
 
-    def test_200_get_movies_by_actor_id(self):
-        res = self.client().get('/actors/2/movies')
+    def test_200_get_actors_by_movie_id(self):
+        res = self.client().get('/movies/8/actors', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
-        self.assertEqual(len(data['movies_id']), 5)
-        for m_id in data['movies_id']:
-            self.assertTrue(m_id in [2,3,4,5,6])
+        self.assertEqual(len(data['actors_id']), 4)
+        for m_id in data['actors_id']:
+            self.assertIn(m_id, [4,5,6,7])
         
-    def test_404_get_movies_with_unknown_actor_id(self):
-        res = self.client().get('/actors/2000/movies')
+    def test_404_get_actors_with_unknown_movie_id(self):
+        res = self.client().get('/movies/2000/actors', headers=PRODCUER_AUTH_HEADER)
         self.assertEqual(res.status_code, 404)
         
     # ------------------------------------------------------------------ 
@@ -96,26 +97,26 @@ class TestCastingApi(unittest.TestCase):
     # ------------------------------------------------------------------ 
     
     def test_200_delete_actor_with_existing_id(self):
-        actors_before = Actor.query.all()
-        res = self.client().delete('/actors/1')
-        actors_after = Actor.query.all()
+        movies_before = Movie.query.all()
+        res = self.client().delete('/movies/1', headers=PRODCUER_AUTH_HEADER)
+        movies_after = Movie.query.all()
         
         data = json.loads(res.data)
         
         exists = False
-        for actor in actors_after:
-            if actor.id == 1:
+        for movie in movies_after:
+            if movie.id == 1:
                 exists = True
         
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertFalse(exists)
-        self.assertEqual(len(actors_before) - len(actors_after), 1)
+        self.assertEqual(len(movies_before) - len(movies_after), 1)
         self.assertTrue('delete' in data)
         self.assertEqual(data['delete'], 1)
         
-    def test_404_delete_actor_with_invlaid_id(self):
-        res = self.client().delete('/actors/100')
+    def test_404_delete_movie_with_invlaid_id(self):
+        res = self.client().delete('/movies/100', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
         
         self.assertFalse(data['success'])
@@ -125,104 +126,66 @@ class TestCastingApi(unittest.TestCase):
     # actors: POST
     # ------------------------------------------------------------------  
     
-    def test_200_post_actor_with_sufficient_input(self):
-        res = self.client().post('/actors', json={'name': 'test_name', 'gender': 'm', 'age': 11})
+    def test_200_post_movie_with_sufficient_input(self):
+        res = self.client().post('/movies', headers=PRODCUER_AUTH_HEADER, json={'title': 'test_name', 'release_date': '2019-05-23T21:30:00.000Z'})
         data = json.loads(res.data)
         
-        actor = Actor.query.filter_by(name='test_name') \
-                           .filter_by(gender_id=1) \
-                           .filter_by(age=11).one_or_none()
+        movie = Movie.query.filter_by(title='test_name').one_or_none()
 
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
-        self.assertTrue(actor)
+        self.assertTrue(movie)
     
-    def test_200_post_actor_with_convertable_name(self):
-        res = self.client().post('/actors', json={'name': 123, 'gender': 'm', 'age': 11})
-        data = json.loads(res.data)
-        actor = Actor.query.filter_by(name='123') \
-                    .filter_by(gender_id=1) \
-                    .filter_by(age=11).one_or_none()
-        self.assertEqual(res.status_code, 200)
-        self.assertTrue(data['success'])
-        self.assertTrue(actor)
         
-    def test_400_post_actor_with_insufficient_input(self):
-        res1 = self.client().post('/actors', json={'name': 'test_name', 'gender': 'm'})
-        res2 = self.client().post('/actors', json={'age': 11, 'gender': 'm'})
-        res3 = self.client().post('/actors', json={'name': 'test_name', 'age': 11})
-        
-        self.assertEqual(res1.status_code, 400)
-        self.assertEqual(res2.status_code, 400)
-        self.assertEqual(res3.status_code, 400)
+    def test_400_post_movie_with_insufficient_input(self):
+        res1 = self.client().post('/movies', headers=PRODCUER_AUTH_HEADER, json={'title': 'test_name'})
+        res2 = self.client().post('/movies', headers=PRODCUER_AUTH_HEADER, json={'release_date': '2019-05-23T21:30:00.000Z'})
+        res3 = self.client().post('/movies', headers=PRODCUER_AUTH_HEADER, json={'title': 'test_name', 'release_date': ''})
+        res4 = self.client().post('/movies', headers=PRODCUER_AUTH_HEADER, json={'title': '', 'release_date': '2019-05-23T21:30:00.000Z'})
 
-    def test_500_post_actor_with_sufficient_but_invalid_input(self):
-        res1 = self.client().post('/actors', json={'name': 'test_name', 'gender': 'm', 'age': 'jfs'})
-        self.assertEqual(res1.status_code, 500)
-    
-    def test_400_post_invalid_gender(self):
-        res1 = self.client().post('/actors', json={'name': 'test_name', 'gender': 'X', 'age': 11})
-        res2 = self.client().post('/actors', json={'name': 'test_name', 'gender': 1, 'age': 11})
-        res3 = self.client().post('/actors', json={'name': 'test_name', 'gender': '', 'age': 11})
-        
         self.assertEqual(res1.status_code, 400)
         self.assertEqual(res2.status_code, 400)
         self.assertEqual(res3.status_code, 400)
+        self.assertEqual(res4.status_code, 400)
+        
+    def test_422_post_movie_with_sufficient_but_invalid_input(self):
+        res1 = self.client().post('/movies', headers=PRODCUER_AUTH_HEADER, json={'title': 'test_name', 'release_date': 'fsj'})
+        res2 = self.client().post('/movies', headers=PRODCUER_AUTH_HEADER, json={'title': 123, 'release_date': '2019-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 422)
+        self.assertEqual(res2.status_code, 422)
+
+    
         
     # ------------------------------------------------------------------ 
     # actors: PATCH
     # ------------------------------------------------------------------ 
     
-    def test_200_pacth_actor_with_normal_input(self):
-        res = self.client().patch('/actors/1', json={'name':'modified', 'age':10, 'gender': 'f', 'movies': [2,3,4]})
+    def test_200_pacth_movie_with_normal_input(self):
+        res = self.client().patch('/movies/1', headers=PRODCUER_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
         data = json.loads(res.data)
         
-        actor = Actor.query.filter_by(id=1).one_or_none()
+        movie = Movie.query.filter_by(id=1).one_or_none()
         
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
-        self.assertTrue(actor)
-        self.assertEqual(actor.name, 'modified')
-        self.assertEqual(actor.gender_id, 2)
-        self.assertEqual(actor.age, 10)
-        self.assertEqual(actor.name, data['actor']['name'])
-        self.assertEqual('f', data['actor']['gender'])
-        self.assertEqual(actor.age, data['actor']['age'])
-        for movie_id in data['actor']['movies']:
-            self.assertTrue(movie_id in [2,3,4])
-        
-        # test appending data
-        res2 = self.client().patch('/actors/1', json={'movies': [1,2,3,4]})
-        data = json.loads(res2.data)
-        self.assertEqual(res2.status_code, 200)
-        self.assertTrue(data['success'])
-        self.assertEqual(len(data['actor']['movies']), 4)
-        for movie_id in data['actor']['movies']:
-            self.assertTrue(movie_id in [1,2,3,4])
+        self.assertTrue(movie)
+        self.assertEqual(movie.title, 'modified')
+        self.assertEqual(movie.release_date, datetime.datetime(3030, 5, 23, 21, 30))
         
         
-    def test_400_patch_actor_with_invalid_key(self):
-        res = self.client().patch('/actors/1', json={'unknown_key':'unknown_value'})
+    def test_400_patch_movie_with_invalid_key(self):
+        res = self.client().patch('/movies/1', headers=PRODCUER_AUTH_HEADER, json={'unknown_key':'unknown_value'})
         self.assertEqual(res.status_code, 400)
 
-    def test_404_patch_actor_with_unknown_id(self):
-        res1 = self.client().patch('/actors/1000', json={'name':'modified', 'age':10, 'gender': 'f'})
-        res2 = self.client().patch('/actors/sfsfsd', json={'name':'modified', 'age':10, 'gender': 'f'})
+    def test_404_patch_movie_with_unknown_id(self):
+        res1 = self.client().patch('/movies/1000', headers=PRODCUER_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        res2 = self.client().patch('/movies/sfsfsd', headers=PRODCUER_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
         
         self.assertEqual(res1.status_code, 404)
         self.assertEqual(res2.status_code, 404)
     
-    def test_400_patch_actor_with_invalid_gender(self):
-        res1 = self.client().patch('/actors/1', json={'name': 'test_name', 'gender': 'X', 'age': 11})
-        res2 = self.client().patch('/actors/1', json={'name': 'test_name', 'gender': 1, 'age': 11})
-        res3 = self.client().patch('/actors/1', json={'name': 'test_name', 'gender': '', 'age': 11})
-        
-        self.assertEqual(res1.status_code, 400)
-        self.assertEqual(res2.status_code, 400)
-        self.assertEqual(res3.status_code, 400)
-    
-    def test_404_patch_actor_with_unknown_movie_id(self):
-        res = self.client().patch('/actors/1', json={'movies': [10000]})
+    def test_404_patch_movies_with_unknown_actor_id(self):
+        res = self.client().patch('/movies/1', headers=PRODCUER_AUTH_HEADER, json={'actors': [10000]})
         self.assertEqual(res.status_code, 400)
         
     
@@ -269,7 +232,11 @@ class TestCastingApi(unittest.TestCase):
         actors[2].movies = [movies[i] for i in [1,2,3,4,6]]
         actors[1].update()
         actors[2].update()
-            
+        
+        for i in range(3,7):
+            actors[i].movies = [movies[7]]
+            actors[i].update()
+                
     def drop_data(self):
         Movie.query.delete()
         Actor.query.delete()

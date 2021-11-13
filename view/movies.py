@@ -1,22 +1,27 @@
 from database.models import Actor, Movie, Gender
-from flask import Blueprint, abort, jsonify, request
+from flask import Blueprint, abort, jsonify, request, current_app
 
 movies_route = Blueprint('movies_route', __name__)
 
 @movies_route.route('', methods=['GET'])
 def get_movies():
     movies = Movie.query.all()
-    print(movies)
-    if (movies is None) or (len(movies) == 0):
+    if (movies is None):
         abort(404)
-    return jsonify([m.format() for m in movies])
+    return jsonify({
+            'success': True,
+            'movies': [m.format() for m in movies]
+        })
 
 @movies_route.route('/<int:movie_id>', methods=['GET'])
 def get_movie_by_id(movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
         abort(404)
-    return jsonify(movie.format())
+    return jsonify({
+            'success': True,
+            'movie': movie.format()
+        })
 
 @movies_route.route('/<int:movie_id>', methods=['DELETE'])
 def delete_movie_by_id(movie_id):
@@ -44,18 +49,12 @@ def patch_movie(movie_id):
     
     try:
         for k in data:
-            if (k == 'actors'):
-                for i in data[k]:
-                    actor = Actor.query.filter_by(id=i).one_or_none()
-                    if actor is None:
-                        abort(404)
-                    else:
-                        movie.actors.append(actor)
+            if k not in ['title', 'release_date']:
+                abort(400)
             else:
                 setattr(movie, k, data[k])
         movie.update()
     except Exception as e:
-        print(e)
         abort(400)
     
     return jsonify({
@@ -77,4 +76,32 @@ def get_actors_by_movie_id(movie_id):
     return jsonify({
         "success": True,
         "actors_id": actors
+    })
+    
+@movies_route.route('', methods=['POST'])
+def post_request_movie():
+    data = request.get_json()
+    if data is None:
+        abort(400)
+    current_app.logger.info('Receving POST request: ' , data)
+    
+    if 'title' not in data or 'release_date' not in data:
+        abort(400)
+    
+    if type(data['title']) is not str or type(data['release_date']) is not str:
+        abort(422)
+    
+    if len(data['title']) == 0 or len(data['release_date']) == 0:
+        abort(400)
+    
+    try:
+        movie = Movie(title=data['title'],
+                      release_date=data['release_date'],
+                      )
+        movie.insert()
+    except Exception as e:
+        abort(422)
+    return jsonify({
+        'success': True,
+        'create': movie.format()
     })

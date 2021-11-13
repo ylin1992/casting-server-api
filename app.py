@@ -1,3 +1,5 @@
+from flask.globals import request
+from flask.json import jsonify
 from database.models import db, setup_db
 from flask import Flask
 from flask_cors import CORS
@@ -15,6 +17,7 @@ def create_app():
     app.register_blueprint(movies_route, url_prefix='/movies')
     app.register_blueprint(actors_route, url_prefix='/actors')
     app.register_blueprint(error_handler)
+    
     return app
 
 app = create_app()

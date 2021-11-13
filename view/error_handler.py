@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-
+from auth.auth import AuthError
 error_handler = Blueprint('error_handler', __name__)
 
 # use "app_errorhandler" instead of "errorhandler" 
@@ -53,10 +53,17 @@ def method_not_allowed(error):
         "error": 405,
         "message": "method not allowed"
     }), 405
+@error_handler.app_errorhandler(403)
+def permission_denied(error):
+    return jsonify({
+        "success": False,
+        "error": 403,
+        "message": "Permission denied"
+    }), 403
 
-# @app.errorhandler(AuthError)
-# def process_AuthError(error):
-#     res = jsonify(error.error)
-#     res.status_code = error.status_code
-
-#     return res
+@error_handler.errorhandler(AuthError)
+def process_AuthError(error):
+    res = jsonify(error.error)
+    res.status_code = error.status_code
+    
+    return res
