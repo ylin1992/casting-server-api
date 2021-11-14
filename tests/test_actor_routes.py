@@ -11,7 +11,7 @@ from .unit_test_config import ASSITSTANT_TOKEN, ASSISTANT_AUTH_HEADER, DIRECTOR_
 
 
 class TestCastingApi(unittest.TestCase):
-
+    
     def setUp(self):
         DB_HOST = os.getenv('DB_HOST', '127.0.0.1:5432')
         DB_USER = os.getenv('DB_USER', 'postgres')
@@ -19,10 +19,12 @@ class TestCastingApi(unittest.TestCase):
         DB_NAME = os.getenv('DB_TEST_NAME', 'casting_test')
         database_path = 'postgresql+psycopg2://{}:{}@{}/{}'.format(DB_USER, DB_PWD, DB_HOST, DB_NAME)
         self.app = create_app()
+        self.app.config["SQLALCHEMY_DATABASE_URI"] = database_path
+        self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
         self.client = self.app.test_client
-
-        self.db = setup_db(self.app, database_path=database_path)
         with self.app.app_context():
+            self.db = SQLAlchemy(self.app)
+            self.db.init_app(self.app)
             self.db.create_all()
             self.drop_data()
             self.populate_data()
@@ -233,9 +235,13 @@ class TestCastingApi(unittest.TestCase):
     # ------------------------------------------------------------------ 
     def populate_data(self):
         genders = Gender.query.all()
-        if (genders is None) or (len(genders) == 0):
-            Gender(id=1, name='m').insert()
-            Gender(id=2, name='f').insert()
+        if genders is None or len(genders) == 0:
+            m = Gender(name='m')
+            m.id = 1
+            f = Gender(name='f')
+            f.id = 2
+            m.insert()
+            f.insert()
         
         actors = [
             Actor(name='a1', age=1, gender_id=1),

@@ -7,6 +7,7 @@ from view.movies import movies_route
 from view.actors import actors_route
 from view.error_handler import error_handler
 from view.login import login_route
+
 # --------------------------
 # initailize app
 # --------------------------

@@ -62,7 +62,7 @@ def post_request_actor(jwt):
         actor.insert()
     except Exception as e:
         current_app.logger.exception(e)
-        abort(500)
+        abort(422)
     return jsonify({
         'success': True,
         'create': actor.format()
