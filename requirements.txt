@@ -11,7 +11,7 @@ click==7.1.2
 colorama==0.4.3
 cryptography==35.0.0
 cycler==0.10.0
-dataclasses==0.6
+dataclasses==0.8
 distlib==0.3.3
 docutils==0.15.2
 ecdsa==0.17.0
@@ -19,7 +19,7 @@ filelock==3.3.1
 Flask==1.1.4
 Flask-Cors==3.0.10
 flask-marshmallow==0.14.0
-Flask-Migrate==2.5.3
+Flask-Migrate==2.5.2
 Flask-RESTful==0.3.9
 Flask-Script==2.0.6
 Flask-SQLAlchemy==2.5.1
