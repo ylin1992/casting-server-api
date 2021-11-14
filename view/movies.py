@@ -1,9 +1,13 @@
 from database.models import Actor, Movie, Gender
 from flask import Blueprint, abort, jsonify, request, current_app
-
+from auth.auth import requires_auth
 movies_route = Blueprint('movies_route', __name__)
-
+'''
+@TODO: add authentication
+@TODO: add endpoints for delete and insert movie.actors
+'''
 @movies_route.route('', methods=['GET'])
+@requires_auth(permission='get:movies')
 def get_movies():
     movies = Movie.query.all()
     if (movies is None):
@@ -14,6 +18,7 @@ def get_movies():
         })
 
 @movies_route.route('/<int:movie_id>', methods=['GET'])
+@requires_auth(permission='get:movies')
 def get_movie_by_id(movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
@@ -24,6 +29,7 @@ def get_movie_by_id(movie_id):
         })
 
 @movies_route.route('/<int:movie_id>', methods=['DELETE'])
+@requires_auth(permission='delete:movie')
 def delete_movie_by_id(movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
@@ -38,6 +44,7 @@ def delete_movie_by_id(movie_id):
         'delete': movie_id
     })
 @movies_route.route('/<int:movie_id>', methods=['PATCH'])
+@requires_auth(permission='patch:movie')
 def patch_movie(movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
@@ -62,6 +69,7 @@ def patch_movie(movie_id):
         'movie': movie.format()
     })
 @movies_route.route('/<int:movie_id>/actors')
+@requires_auth(permission='get:movies')
 def get_actors_by_movie_id(movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
@@ -79,6 +87,7 @@ def get_actors_by_movie_id(movie_id):
     })
     
 @movies_route.route('', methods=['POST'])
+@requires_auth(permission='post:movie')
 def post_request_movie():
     data = request.get_json()
     if data is None:

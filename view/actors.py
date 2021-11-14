@@ -68,7 +68,8 @@ def post_request_actor(jwt):
     })
     
 @actors_route.route('/<int:actor_id>', methods=['PATCH'])
-def patch_actor(actor_id):
+@requires_auth('patch:actor')
+def patch_actor(jwt, actor_id):
     actor = Actor.query.filter_by(id=actor_id).one_or_none()
     if actor is None:
         abort(404)
@@ -109,7 +110,9 @@ def patch_actor(actor_id):
     })
 
 @actors_route.route('/<int:actor_id>/movies')
-def get_movies_by_actor_id(actor_id):
+@requires_auth('get:actors')
+@requires_auth('get:movies')
+def get_movies_by_actor_id(jwt, actor_id):
     actor = Actor.query.filter_by(id=actor_id).one_or_none()
     if actor is None:
         abort(404)

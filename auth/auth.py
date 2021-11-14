@@ -128,7 +128,7 @@ def requires_auth(permission=''):
                 payload = verify_decode_jwt(token)
                 check_permissions(permission, payload)
             except Exception as e:
-                current_app.logger.exception(e)
+                # current_app.logger.exception(e)
                 if 'status_code' in e.__dict__:
                     abort(e.status_code)
                 else:
