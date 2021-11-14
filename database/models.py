@@ -9,8 +9,20 @@ def setup_db(app, database_path=SQLALCHEMY_DATABASE_URI):
     app.config["SQLALCHEMY_DATABASE_URI"] = database_path
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
-    db.init_app(app)
+    db.init_app(app)   
+    with app.app_context():
+        preload_data(db) 
     return db
+
+def preload_data(db):
+    genders = Gender.query.all()
+    if genders is None or len(genders) == 0:
+        m = Gender(name='m')
+        m.id = 1
+        f = Gender(name='f')
+        f.id = 2
+        m.insert()
+        f.insert()
 # ------------------------------------------------------------
 # tables
 # ------------------------------------------------------------
