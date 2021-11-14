@@ -5,7 +5,6 @@ import sqlalchemy
 from flask import Flask
 import json
 from app import create_app
-from database.models import setup_db, Actor, Movie, Gender
 from .unit_test_config import ASSITSTANT_TOKEN, ASSISTANT_AUTH_HEADER, DIRECTOR_AUTH_HEADER, DIRECTOR_TOKEN, PRODCUER_AUTH_HEADER, PRODUCER_TOKEN
 
 
@@ -23,11 +22,11 @@ class TestCastingApi(unittest.TestCase):
 
         self.app.config["SQLALCHEMY_DATABASE_URI"] = database_path
         self.app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-        self.engine = sqlalchemy.create_engine(database_path)
-    
+
         with self.app.app_context():
             self.db = SQLAlchemy(self.app)
-            print(self.app.config["SQLALCHEMY_DATABASE_URI"])
+            from database import models
+            print('metadata from test: ', self.db.metadata.tables)
             self.db.create_all()
             self.db.session.commit()
     def tearDown(self):
