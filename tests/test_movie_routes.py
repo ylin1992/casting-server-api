@@ -32,7 +32,7 @@ class TestCastingApi(unittest.TestCase):
         pass
 
     # ------------------------------------------------------------------ 
-    # actors: GET
+    # movies: GET
     # ------------------------------------------------------------------ 
     def test_get_all_movies(self):
         res = self.client().get('/movies', headers=PRODCUER_AUTH_HEADER)
@@ -93,7 +93,7 @@ class TestCastingApi(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         
     # ------------------------------------------------------------------ 
-    # actors: DELETE
+    # movies: DELETE
     # ------------------------------------------------------------------ 
     
     def test_200_delete_actor_with_existing_id(self):
@@ -123,7 +123,7 @@ class TestCastingApi(unittest.TestCase):
         self.assertEqual(res.status_code, 404)
         
     # ------------------------------------------------------------------ 
-    # actors: POST
+    # movies: POST
     # ------------------------------------------------------------------  
     
     def test_200_post_movie_with_sufficient_input(self):
@@ -157,7 +157,7 @@ class TestCastingApi(unittest.TestCase):
     
         
     # ------------------------------------------------------------------ 
-    # actors: PATCH
+    # movies: PATCH
     # ------------------------------------------------------------------ 
     
     def test_200_pacth_movie_with_normal_input(self):

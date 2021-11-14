@@ -111,7 +111,6 @@ def patch_actor(jwt, actor_id):
 
 @actors_route.route('/<int:actor_id>/movies')
 @requires_auth('get:actors')
-@requires_auth('get:movies')
 def get_movies_by_actor_id(jwt, actor_id):
     actor = Actor.query.filter_by(id=actor_id).one_or_none()
     if actor is None:

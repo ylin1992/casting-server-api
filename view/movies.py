@@ -8,7 +8,7 @@ movies_route = Blueprint('movies_route', __name__)
 '''
 @movies_route.route('', methods=['GET'])
 @requires_auth(permission='get:movies')
-def get_movies():
+def get_movies(jwt):
     movies = Movie.query.all()
     if (movies is None):
         abort(404)
@@ -19,7 +19,7 @@ def get_movies():
 
 @movies_route.route('/<int:movie_id>', methods=['GET'])
 @requires_auth(permission='get:movies')
-def get_movie_by_id(movie_id):
+def get_movie_by_id(jwt, movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
         abort(404)
@@ -30,7 +30,7 @@ def get_movie_by_id(movie_id):
 
 @movies_route.route('/<int:movie_id>', methods=['DELETE'])
 @requires_auth(permission='delete:movie')
-def delete_movie_by_id(movie_id):
+def delete_movie_by_id(jwt, movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
         abort(404)
@@ -45,7 +45,7 @@ def delete_movie_by_id(movie_id):
     })
 @movies_route.route('/<int:movie_id>', methods=['PATCH'])
 @requires_auth(permission='patch:movie')
-def patch_movie(movie_id):
+def patch_movie(jwt, movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
         abort(404)
@@ -70,7 +70,7 @@ def patch_movie(movie_id):
     })
 @movies_route.route('/<int:movie_id>/actors')
 @requires_auth(permission='get:movies')
-def get_actors_by_movie_id(movie_id):
+def get_actors_by_movie_id(jwt, movie_id):
     movie = Movie.query.filter_by(id=movie_id).one_or_none()
     if movie is None:
         abort(404)
@@ -88,7 +88,7 @@ def get_actors_by_movie_id(movie_id):
     
 @movies_route.route('', methods=['POST'])
 @requires_auth(permission='post:movie')
-def post_request_movie():
+def post_request_movie(jwt):
     data = request.get_json()
     if data is None:
         abort(400)

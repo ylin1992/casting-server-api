@@ -38,6 +38,7 @@ class TestCastingApi(unittest.TestCase):
     def test_401_get_actors_with_invalid_header(self):
         res1 = self.client().get('/actors', headers={'invalid_header': 'invlalid_token'})
         res2 = self.client().get('/actors/1', headers={'invalid_header': 'invlalid_token'})
+        
         self.assertEqual(res1.status_code, 401)
         self.assertEqual(res2.status_code, 401)
         
@@ -108,7 +109,88 @@ class TestCastingApi(unittest.TestCase):
         res2 = self.client().patch('/actors/2', headers=PRODCUER_AUTH_HEADER, json={'name': 'test_name2', 'gender': 'm', 'age': 11})
         self.assertEqual(res1.status_code, 200)
         self.assertEqual(res2.status_code, 200)
+    
+    # --------------- movie routes ---------------
+
+    # ------------------------------------------------------------------ 
+    # movies: GET
+    # ------------------------------------------------------------------ 
+    def test_401_get_movies_with_invalid_header(self):
+        res1 = self.client().get('/movies', headers={'invalid_header': 'invlalid_token'})
+        res2 = self.client().get('/movies/1', headers={'invalid_header': 'invlalid_token'})
         
+        self.assertEqual(res1.status_code, 401)
+        self.assertEqual(res2.status_code, 401)
+        
+    def test_401_get_movies_with_invalid_token(self):
+        res1 = self.client().get('/movies', headers={'Bearer': 'invlalid_token'})
+        res2 = self.client().get('/movies/1', headers={'Bearer': 'invlalid_token'})
+        self.assertEqual(res1.status_code, 401)
+        self.assertEqual(res2.status_code, 401)    
+
+    # ------------------------------------------------------------------ 
+    # movies: POST
+    # ------------------------------------------------------------------ 
+    def test_401_post_movies_with_invalid_header(self):
+        res1 = self.client().post('/movies', headers={'invalid_header': 'invlalid_token'}, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 401)
+    
+    def test_401_post_movies_with_invalid_token(self):
+        res1 = self.client().post('/movies', headers={'Bearer': 'invlalid_token'}, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 401)
+    
+    def test_403_post_movies_with_unauthorized_token(self):
+        res1 = self.client().post('/movies', headers=ASSISTANT_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        res2 = self.client().post('/movies', headers=DIRECTOR_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 403)
+        self.assertEqual(res2.status_code, 403)
+    
+    def test_200_post_movies_with_authorized_token(self):
+        res1 = self.client().post('/movies', headers=PRODCUER_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 200)
+        
+    # ------------------------------------------------------------------ 
+    # movies: DELETE
+    # ------------------------------------------------------------------ 
+    def test_401_delete_movies_with_invalid_header(self):
+        res1 = self.client().delete('/movies/1', headers={'invalid_header': 'invlalid_token'})
+        self.assertEqual(res1.status_code, 401)
+    
+    def test_401_delete_movies_with_invalid_token(self):
+        res1 = self.client().delete('/movies/1', headers={'Bearer': 'invlalid_token'})
+        self.assertEqual(res1.status_code, 401)
+    
+    def test_403_delete_movies_with_unauthorized_token(self):
+        res1 = self.client().delete('/movies/1', headers=ASSISTANT_AUTH_HEADER)
+        res2 = self.client().delete('/movies/1', headers=DIRECTOR_AUTH_HEADER)
+        self.assertEqual(res1.status_code, 403)
+        self.assertEqual(res2.status_code, 403)
+
+    def test_200_delete_movies_with_authorized_token(self):
+        res1 = self.client().delete('/movies/2', headers=PRODCUER_AUTH_HEADER)
+        self.assertEqual(res1.status_code, 200)
+
+    # ------------------------------------------------------------------ 
+    # movies: PATCH
+    # ------------------------------------------------------------------ 
+    def test_401_patch_movies_with_invalid_header(self):
+        res1 = self.client().patch('/movies/1', headers={'invalid_header': 'invlalid_token'}, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 401)
+    
+    def test_401_patch_movies_with_invalid_token(self):
+        res1 = self.client().patch('/movies/1', headers={'Bearer': 'invlalid_token'}, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 401)
+    
+    def test_403_patch_movies_with_unauthorized_token(self):
+        res1 = self.client().patch('/movies/1', headers=ASSISTANT_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 403)
+    
+    def test_200_patch_movies_with_authorized_token(self):
+        res1 = self.client().patch('/movies/1', headers=DIRECTOR_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        res2 = self.client().patch('/movies/2', headers=PRODCUER_AUTH_HEADER, json={'title':'modified', 'release_date': '3030-05-23T21:30:00.000Z'})
+        self.assertEqual(res1.status_code, 200)
+        self.assertEqual(res2.status_code, 200)
+  
     # ------------------------------------------------------------------ 
     # helper functions
     # ------------------------------------------------------------------ 
