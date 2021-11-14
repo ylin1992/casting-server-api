@@ -49,9 +49,10 @@ def delete_actor_by_id(jwt, actor_id):
 def post_request_actor(jwt):
     data = request.get_json()
     current_app.logger.info('Receving POST request: ' , data)
-    if 'name' not in data or 'age' not in data or 'gender' not in data:
+    if data is None or 'name' not in data or 'age' not in data or 'gender' not in data:
         abort(400)
     gender = utils.get_gender_from_string(data['gender'])
+    print(gender)
     if gender is None:
         abort(400)
     try:
