@@ -525,7 +525,7 @@ python app.py
 
 6. **Start Using API**: The port is by default hosted on ```port:5000```, base URL: [http://loalhost:5000](http://loalhost:5000)
 
-## (Optional) Run unitest
+## (Optional) Run unit test
 There are 3 test files in the ```/tests``` directory.
 - ```test_auth.py```: tests errors about authentication
 - ```test_actor_routes.py```: tests actor routes' functionality
