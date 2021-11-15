@@ -115,10 +115,11 @@ There are 3 level of authority:
     - Return: Info of modified actor
 - Authorization: Director, Producer
 - Example: 
-```curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
-                   -H 'Content-Type: application/json' \
-                   -H 'Authorization: Bearer {YOUR_TOKEN}' \
-                   -d '{"name": "modified name","age": 11, "movies": [8,9,10]}'```
+```
+curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer {YOUR_TOKEN}' \
+     -d '{"name": "modified name","age": 11, "movies": [8,9,10]}'```
 ```
 {
     "actor": {
@@ -173,10 +174,11 @@ Now if we check movie #8, we can find that actor #11 is added into movie #8's "a
     - Return: Info of created actor
 - Authorization: Director, Producer
 - Example: 
-```curl -X POST https://casting-api-elin92.herokuapp.com/actors \
-                   -H 'Content-Type: application/json' \
-                   -H 'Authorization: Bearer {YOUR_TOKEN}' \
-                   -d '{"name": "A new actor","age": 11,"gender": "m"}'```
+```
+curl -X POST https://casting-api-elin92.herokuapp.com/actors \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer {YOUR_TOKEN}' \
+     -d '{"name": "A new actor","age": 11,"gender": "m"}'```
 ```
 {
     "create": {
@@ -197,5 +199,6 @@ Now if we check movie #8, we can find that actor #11 is added into movie #8's "a
         - Invalid age: ```"One Year Old"```
 
 ### DELETE /actors/<int: actor_id>
+
 
 ## Error handling
