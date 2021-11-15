@@ -172,6 +172,7 @@ curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
      -H 'Authorization: Bearer {YOUR_TOKEN}' \
      -d '{"name": "modified name","age": 11, "movies": [8,9,10]}'```
 ```
+```
 {
     "actor": {
         "age": 30,
