@@ -542,5 +542,5 @@ python -m tests.test_movie_routes   # run movie routes test
 ### Run all test
 If you are going to run all tests, run below commands:
 ```
-python -m unittest discover
+python -m unittest discover -v
 ```

@@ -57,16 +57,16 @@ class TestCastingApi(unittest.TestCase):
             self.assertTrue(data['success'])
             
     def test_200_get_movies_by_existing_id(self):
-        res = self.client().get('/movies/3', headers=PRODCUER_AUTH_HEADER)
+        res = self.client().get('/movies/1', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
     
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
         self.assertTrue('movie' in data)
-        self.assertEqual(data['movie']['id'], 3)
+        self.assertEqual(data['movie']['id'], 1)
         
     def test_404_get_movie_with_unknown_id(self):
-        res = self.client().get('/movies/100', headers=PRODCUER_AUTH_HEADER)
+        res = self.client().get('/movies/1000000000000000', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
         
         self.assertEqual(res.status_code, 404)
@@ -80,13 +80,15 @@ class TestCastingApi(unittest.TestCase):
         self.assertFalse(data['success'])
 
     def test_200_get_actors_by_movie_id(self):
-        res = self.client().get('/movies/8/actors', headers=PRODCUER_AUTH_HEADER)
+        res = self.client().get('/movies/1/actors', headers=PRODCUER_AUTH_HEADER)
         data = json.loads(res.data)
+        movie = Movie.query.filter_by(id=1).one_or_none()
+        expected_aid = [actor.id for actor in movie.actors]
         self.assertEqual(res.status_code, 200)
         self.assertTrue(data['success'])
-        self.assertEqual(len(data['actors_id']), 4)
-        for m_id in data['actors_id']:
-            self.assertIn(m_id, [4,5,6,7])
+        self.assertEqual(len(data['actors_id']), len(expected_aid))
+        for a_id in data['actors_id']:
+            self.assertIn(a_id, expected_aid)
         
     def test_404_get_actors_with_unknown_movie_id(self):
         res = self.client().get('/movies/2000/actors', headers=PRODCUER_AUTH_HEADER)
@@ -208,8 +210,12 @@ class TestCastingApi(unittest.TestCase):
             Actor(name='a7', age=1, gender_id=1),
             Actor(name='a8', age=2, gender_id=2),
         ]
+        
+        # actors[0].id = 1
+        # actors[0].update()
+        
         for i, actor in enumerate(actors):
-            actor.id = i + 1
+            # actor.id = i + 1
             actor.insert()
             
         movies = [
@@ -223,16 +229,20 @@ class TestCastingApi(unittest.TestCase):
             Movie(title='m8', release_date='2011-05-23T21:30:00.000Z')
         ]
         
+        # movies[0].id = 1
+        # movies[0].update()
         for i, movie in enumerate(movies):
-            movie.id = i + 1
+            # movie.id = i + 1
             movie.insert()
             
         # assign some testing movies for actors[1, 2]
-        actors[1].movies = [movies[i] for i in [1,2,3,4,5]]
+        actors[0].movies = [movies[i] for i in [1,2,3,4,5]]
         actors[2].movies = [movies[i] for i in [1,2,3,4,6]]
         actors[1].update()
         actors[2].update()
         
+        movies[0].actors = [actors[i] for i in [2,3,4,5,6]]
+        movies[0].update()
         for i in range(3,7):
             actors[i].movies = [movies[7]]
             actors[i].update()
@@ -240,6 +250,8 @@ class TestCastingApi(unittest.TestCase):
     def drop_data(self):
         Movie.query.delete()
         Actor.query.delete()
+        self.db.session.execute("ALTER SEQUENCE actor_id_seq RESTART WITH 1")
+        self.db.session.execute("ALTER SEQUENCE movie_id_seq RESTART WITH 1")
         self.db.session.commit()
 
         

@@ -14,6 +14,5 @@ export DB_PWD='<YOUR_DB_PWD>'
 export DB_NAME='casting'
 export DB_TEST_NAME='casting_test' 
 
-
 createdb casting_test
 psql -d casting_test -h 127.0.0.1 -U $DB_USER --echo-all -f ./database/create_test_tables.sql

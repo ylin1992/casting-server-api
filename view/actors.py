@@ -38,7 +38,7 @@ def delete_actor_by_id(jwt, actor_id):
     try:
         actor.delete()
     except Exception as e:
-        current_app.logger.exception(e)
+        # current_app.logger.exception(e)
         abort(500)
     return jsonify({
         'success': True,
@@ -49,11 +49,10 @@ def delete_actor_by_id(jwt, actor_id):
 @requires_auth(permission='post:actor')
 def post_request_actor(jwt):
     data = request.get_json()
-    current_app.logger.info('Receving POST request: ' , data)
+    # current_app.logger.info('Receving POST request: ' , data)
     if data is None or 'name' not in data or 'age' not in data or 'gender' not in data:
         abort(400)
     gender = utils.get_gender_from_string(data['gender'])
-    print(gender)
     if gender is None:
         abort(400)
     try:
@@ -62,7 +61,7 @@ def post_request_actor(jwt):
                       gender_id=gender.id)
         actor.insert()
     except Exception as e:
-        current_app.logger.exception(e)
+        # current_app.logger.exception(e)
         abort(422)
     return jsonify({
         'success': True,
@@ -103,7 +102,7 @@ def patch_actor(jwt, actor_id):
                 setattr(actor, k, data[k])
         actor.update()
     except Exception as e:
-        current_app.logger.exception(e)
+        # current_app.logger.exception(e)
         abort(400)
     
     return jsonify({
@@ -121,7 +120,7 @@ def get_movies_by_actor_id(jwt, actor_id):
     try:
         movies = [m.id for m in actor.movies]
     except Exception as e:
-        current_app.logger.exception(e)
+        # current_app.logger.exception(e)
         abort(422)
     
     return jsonify({
