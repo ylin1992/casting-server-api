@@ -125,5 +125,5 @@ def post_request_movie(jwt):
         abort(422)
     return jsonify({
         'success': True,
-        'create': movie.format()
+        'create': movie.format(claim_id=False)
     })

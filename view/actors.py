@@ -60,12 +60,13 @@ def post_request_actor(jwt):
                       age=data['age'],
                       gender_id=gender.id)
         actor.insert()
+
     except Exception as e:
         # current_app.logger.exception(e)
         abort(422)
     return jsonify({
         'success': True,
-        'create': actor.format()
+        'create': actor.format(claim_id=False)
     })
     
 @actors_route.route('/<int:actor_id>', methods=['PATCH'])

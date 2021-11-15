@@ -82,14 +82,21 @@ class Movie(db.Model):
                              )
     
     # methods
-    def format(self):
-        return {
-        'id': self.id,
-        'title': self.title,
-        'release_date': self.release_date,
-        'actors_id': [actor.id for actor in self.actors]
-    }
-    
+    def format(self, claim_id=True):
+        if claim_id:
+            return {
+            'id': self.id,
+            'title': self.title,
+            'release_date': self.release_date,
+            'actors_id': [actor.id for actor in self.actors]
+        }
+        else: 
+            return {
+            'title': self.title,
+            'release_date': self.release_date,
+            'actors_id': [actor.id for actor in self.actors]
+        }
+
     def insert(self):
         db.session.merge(self)
         db.session.commit()
@@ -116,14 +123,22 @@ class Actor(db.Model):
     
     
     # methods
-    def format(self):
-        return {
-            'id': self.id,
-            'name': self.name,
-            'gender': (Gender.query.get(self.gender_id)).name,
-            'age': self.age,
-            'movies': [movie.id for movie in self.movies]
-        }
+    def format(self, claim_id=True):
+        if claim_id:
+            return {
+                'id': self.id,
+                'name': self.name,
+                'gender': (Gender.query.get(self.gender_id)).name,
+                'age': self.age,
+                'movies': [movie.id for movie in self.movies]
+            }
+        else:
+            return {
+                'name': self.name,
+                'gender': (Gender.query.get(self.gender_id)).name,
+                'age': self.age,
+                'movies': [movie.id for movie in self.movies]
+            }
     
     def insert(self):
         db.session.merge(self)

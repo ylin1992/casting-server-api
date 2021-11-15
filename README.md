@@ -138,7 +138,6 @@ curl -X POST https://casting-api-elin92.herokuapp.com/actors \
     "create": {
         "age": 11,
         "gender": "M",
-        "id": 15,
         "movies": [],
         "name": "A new actor"
     },
@@ -352,7 +351,6 @@ curl -X POST https://casting-api-elin92.herokuapp.com/movies \
 {
     "create": {
         "actors_id": [],
-        "id": 2,
         "release_date": "Thu, 23 May 2019 21:30:00 GMT",
         "title": "A great movie"
     },
