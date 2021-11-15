@@ -1,7 +1,7 @@
 import os 
 import unittest
 from flask_sqlalchemy import SQLAlchemy
-import sqlalchemy
+from sqlalchemy import func 
 from flask import Flask
 import json
 from app import create_app

@@ -186,6 +186,7 @@ curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
     },
     "success": true
 }
+```
 Now if we check movie #8, we can find that actor #11 is added into movie #8's "actors" field
 ```
 curl https://casting-api-elin92.herokuapp.com/actors/8
