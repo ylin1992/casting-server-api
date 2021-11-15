@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS "Movie" (
 );
 
 
-CREATE TABLE actors_movies (
+CREATE TABLE IF NOT EXISTS actors_movies (
     actor_id INT,
     movie_id INT,
     FOREIGN KEY(actor_id)
@@ -47,7 +47,7 @@ CREATE TABLE actors_movies (
             ON DELETE CASCADE
 );
 
-CREATE TABLE gender_actors (
+CREATE TABLE IF NOT EXISTS gender_actors (
     gender_id INT,
     actor_id INT,
     FOREIGN KEY(actor_id)
