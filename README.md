@@ -4,7 +4,7 @@ The project provides a backend service where users are allowed to add, delete, c
 2. The authentication is provided by Auth0, for more detail, please refer to "Authentication" session.
 3. The app can also run on local server, for more detail, please refer to "Running on local server" session.
 
-## API References
+# API References
 
 ## Authentication
 The API is hosted by an athentication basis, which means all operations and requests have to be bundled with an authorized token
@@ -460,10 +460,85 @@ Errors are returned in JSON format:
     "message": "bad request"
 }
 ```
-The API supports two types of status code
+The API supports 6 types of status code
 - 404: Data not found
 - 422: Unproccessable
 - 400: Bad request
 - 401: Unauthorized
 - 403: Invalid token
 - 500: Internal error
+
+# Running on local server
+The app can be hosted locally, several steps should be completed before moving on.
+1. **Install Python 3.7**: Follow instructions to install the latest version of python for your platform in the [python docs](https://docs.python.org/3/using/unix.html#getting-and-installing-the-latest-version-of-python)
+
+2. **PIP Dependencies** - Install dependencies by naviging to the root directory and running:
+```bash
+pip install -r requirements.txt
+```
+
+3. **Setup Environment Variables** - Open the "setup_local.sh" file and fill in the following part
+```
+export TEST_ASSISTANT_TOKEN='<ASSISTANT_TOKEN>'
+export TEST_DIRECTOR_TOKEN='<DIRECTOR_TOKEN>'
+export TEST_PRODUCER_TOKEN='<PRODUCER_TOKEN>'
+export DB_HOST='<YOUR_SECRET_DB_HOST_NAME>'
+export DB_USER='<YOUR_USER_NAME>'
+export DB_PWD='<YOUR_DB_PWD>'
+```
+**Note**: 
+    - The three tokens mentioned above have to be granted by Auth0 server
+    - The default db is postgres SQL
+
+After the bash file is complete, run the command to setup your environment:
+```
+source setup_local.sh
+```
+**Note**: In the bash file, there is a casting_test database created for unit tests, if you are not going to run unit test, it is fine to skip the step
+
+4. **Migrate Database**: run the following script to create neccessary tables.
+```
+python migrate.py db upgrade
+```
+After running the script, check the result in ```psql```, it might look like:
+```
+psql casting
+casting=# \dt
+            List of relations
+ Schema |      Name       | Type  | Owner 
+--------+-----------------+-------+-------
+ public | Actor           | table | <your_user_name>
+ public | Gender          | table | <your_user_name>
+ public | Movie           | table | <your_user_name>
+ public | actors_movies   | table | <your_user_name>
+ public | alembic_version | table | <your_user_name>
+ public | gender_actors   | table | <your_user_name>
+(6 rows)
+```
+
+5. **Launch The Program**: Navigate to the root directory and run
+```
+python app.py
+```
+
+6. **Start Using API**: The port is by default hosted on ```port:5000```, base URL: [http://loalhost:5000](http://loalhost:5000)
+
+## (Optional) Run unitest
+There are 3 test files in the ```/tests``` directory.
+- ```test_auth.py```: tests errors about authentication
+- ```test_actor_routes.py```: tests actor routes' functionality
+- ```test_movie_routes.py```: tests movie routes' functionality
+
+### Run single test
+If you are going to run a single test, run below commands:
+```
+python -m tests.test_auth           # run authentication test
+python -m tests.test_actor_routes   # run actor routes test
+python -m tests.test_movie_routes   # run movie routes test
+```
+
+### Run all test
+If you are going to run all tests, run below commands:
+```
+python -m unittest discover
+```
