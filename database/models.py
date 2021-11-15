@@ -135,3 +135,4 @@ class Actor(db.Model):
     def __repr__(self):
         return str(self.format())
     
+# print('metadat from models: ', db.metadata.tables)

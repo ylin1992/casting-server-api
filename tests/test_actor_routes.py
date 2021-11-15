@@ -160,9 +160,9 @@ class TestCastingApi(unittest.TestCase):
         self.assertEqual(res2.status_code, 400)
         self.assertEqual(res3.status_code, 400)
 
-    def test_500_post_actor_with_sufficient_but_invalid_input(self):
+    def test_422_post_actor_with_sufficient_but_invalid_input(self):
         res1 = self.client().post('/actors', headers=PRODCUER_AUTH_HEADER, json={'name': 'test_name', 'gender': 'm', 'age': 'jfs'})
-        self.assertEqual(res1.status_code, 500)
+        self.assertEqual(res1.status_code, 422)
     
     def test_400_post_invalid_gender(self):
         res1 = self.client().post('/actors', headers=PRODCUER_AUTH_HEADER, json={'name': 'test_name', 'gender': 'X', 'age': 11})
@@ -253,9 +253,9 @@ class TestCastingApi(unittest.TestCase):
             Actor(name='a7', age=1, gender_id=1),
             Actor(name='a8', age=2, gender_id=2),
         ]
-        for i, actor in enumerate(actors):
-            actor.id = i + 1
-            actor.insert()
+        # for i, actor in enumerate(actors):
+        #     actor.id = i + 1
+        #     actor.insert()
             
         movies = [
             Movie(title='m1', release_date='2019-05-23T21:30:00.000Z'),
@@ -268,9 +268,9 @@ class TestCastingApi(unittest.TestCase):
             Movie(title='m8', release_date='2011-05-23T21:30:00.000Z')
         ]
         
-        for i, movie in enumerate(movies):
-            movie.id = i + 1
-            movie.insert()
+        # for i, movie in enumerate(movies):
+        #     movie.id = i + 1
+        #     movie.insert()
             
         # assign some testing movies for actors[1, 2]
         actors[1].movies = [movies[i] for i in [1,2,3,4,5]]

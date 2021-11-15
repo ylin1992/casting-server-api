@@ -109,6 +109,7 @@ def post_request_movie(jwt):
                       )
         movie.insert()
     except Exception as e:
+        print(e)
         abort(422)
     return jsonify({
         'success': True,

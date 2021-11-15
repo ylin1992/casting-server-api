@@ -1,3 +1,4 @@
+#!/bin/bash
 export DEV_LEVEL='DEV'
 
 export AUTH0_DOMAIN='dev-artpgixt.us.auth0.com'

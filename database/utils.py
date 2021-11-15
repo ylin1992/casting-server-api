@@ -2,9 +2,6 @@ from database.models import Gender
 
 def get_gender_from_string(string):
     # gender must be one of 'f', 'F', 'm', 'M'
-    print('string: ', string)
-    print('type(string) ', type(string))
-    print('len(string) ', len(string))
     if string is None:
         return None
 
