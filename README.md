@@ -542,3 +542,80 @@ If you are going to run all tests, run below commands:
 ```
 python -m unittest discover -v
 ```
+
+# Example
+
+The example below shows a flow that a producer is creating a new actor and a new movie, then assign several actors to that movie
+## Create a new actor and a new movie
+The producer wants to add ***Johnny Depp*** into the database, he calls
+```
+curl -X POST https://casting-api-elin92.herokuapp.com/actors \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer {YOUR_TOKEN}' \
+     -d '{"name": "johnny Depp","age": 58,"gender": "m"}'
+
+which returns:
+{
+    "name": "johnny Depp",
+    "age": 58,
+    "gender": "m"
+}
+```
+
+And then he wants a movie to be released on 2022/2/2, called ***Pirates of the Caribbean 6***, so he calls
+```
+curl -X POST https://casting-api-elin92.herokuapp.com/movies \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer {YOUR_TOKEN}' \
+     -d '{"title": "Pirates of the Caribbean 6","release_date": "2022/2/2"}'
+
+which returns:
+{
+    "create": {
+        "actors_id": [],
+        "release_date": "2022/2/2",
+        "title": "Pirates of the Caribbean 6"
+    },
+    "success": true
+}
+```
+
+## Assign actors to the new movie
+So now, he check throgh the actors list by calling:
+```
+curl https://casting-api-elin92.herokuapp.com/actors \
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+
+```
+and found that Johnny Depp is #11
+
+He might also want to know the ID of the newly created movie, so he calls:
+```
+curl https://casting-api-elin92.herokuapp.com/movies/8/actors \
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
+and found that the Pirates of the Caribbean 6 is #9
+
+Perfect, so now he is able to assign Johnny Depp and other actors he finds suitable into this movie, he calls:
+```
+curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer {YOUR_TOKEN}' \
+     -d '{"actors":[1,3,11]}''
+
+which returns 
+{
+    "movie": {
+        "actors_id": [
+            1,
+            3,
+            11
+        ],
+        "id": 9,
+        "release_date": "Wed, 02 Feb 2022 00:00:00 GMT",
+        "title": "Pirates of the Caribbean 6"
+    },
+    "success": true
+}
+```
+And the work is done.
