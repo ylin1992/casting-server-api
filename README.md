@@ -30,9 +30,10 @@ There are 3 level of authority:
 1. The token will be valid for 1 day, be sure to login again to extend your permissions.
 2. By default, you **will not be granted any permissions**, contact us to get your account upgraded.
 
-## Base URL: [https://casting-api-elin92.herokuapp.com](https://casting-api-elin92.herokuapp.com)
+## Base URL 
+The app is hosted on Heroku, base url: [https://casting-api-elin92.herokuapp.com](https://casting-api-elin92.herokuapp.com)
 
-## Endpoints
+## Endpoints - Actors
 
 ### GET /actors
 - General: Returns all actors, a success flag and number of total actors.
@@ -101,6 +102,44 @@ There are 3 level of authority:
 - Errors:
     - 404: No actor with the input id
 
+### POST /actors
+- General: Creates a new actor into the database
+    - Input: JSON format:
+    ```
+    {
+        "name": "actor's name",
+        "age": actor's age (in integer),
+        "gender": actor's gender ("m", "M", "f", "F")
+    }
+    ```
+    - Return: Info of created actor
+- Authorization: Director, Producer
+- Example: 
+```
+curl -X POST https://casting-api-elin92.herokuapp.com/actors \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer {YOUR_TOKEN}' \
+     -d '{"name": "A new actor","age": 11,"gender": "m"}'```
+```
+```
+{
+    "create": {
+        "age": 11,
+        "gender": "M",
+        "id": 15,
+        "movies": [],
+        "name": "A new actor"
+    },
+    "success": true
+}
+```
+- Errors:
+    - 400: Invalid request including:
+        - Invalid gender, i.e. ```"X"```, ```""```, ```1```
+    - 422: Unprocessable input:
+        - Invalid name: ```123```
+        - Invalid age: ```"One Year Old"```
+
 ### PATCH /actors/<int: actor_id>
 - General: Modify an existing actor in the database by the given id
     - Input: JSON format (not all fields are neccessary):
@@ -161,44 +200,251 @@ Now if we check movie #8, we can find that actor #11 is added into movie #8's "a
     - 404: 
         - actor with input id is not found
 
-### POST /actors
-- General: Creates a new actor into the database
-    - Input: JSON format:
-    ```
-    {
-        "name": "actor's name",
-        "age": actor's age (in integer),
-        "gender": actor's gender ("m", "M", "f", "F")
-    }
-    ```
-    - Return: Info of created actor
-- Authorization: Director, Producer
-- Example: 
+### DELETE /actors/<int: actor_id>
+- General: Delete an actor with the given id and return the deleted id
+    - Note: If the actor is in the list of certain movies' "actors" list, the actor will be automatically removed from them.
+- Authorization:  Director, Producer
+- Example: Delete actor #11
 ```
-curl -X POST https://casting-api-elin92.herokuapp.com/actors \
-     -H 'Content-Type: application/json' \
-     -H 'Authorization: Bearer {YOUR_TOKEN}' \
-     -d '{"name": "A new actor","age": 11,"gender": "m"}'```
+curl -X DELETE https://casting-api-elin92.herokuapp.com/actors/11 \
+     -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
 ```
 {
-    "create": {
-        "age": 11,
-        "gender": "M",
-        "id": 15,
-        "movies": [],
-        "name": "A new actor"
+    "delete": 11,
+    "success": true
+}
+```
+Now we get ```/movie/8``` (where it contained ***actor #8*** but now has been removed)
+```
+{
+    "movie": {
+        "actors_id": [
+            9
+        ],
+        "id": 8,
+        "release_date": "Wed, 22 May 2019 21:30:00 GMT",
+        "title": "m2"
     },
     "success": true
 }
 ```
 - Errors:
-    - 400: Invalid request including:
-        - Invalid gender, i.e. ```"X"```, ```""```, ```1```
-    - 422: Unprocessable input:
-        - Invalid name: ```123```
-        - Invalid age: ```"One Year Old"```
+    - 404: No actor with the input id
 
-### DELETE /actors/<int: actor_id>
+## Endpoints - Movies
+### GET /movies
+- General: Returns all movies, a success flag and number of total movies.
+- Authorization: Assistant, Director, Producer
+- Example: 
+```
+curl https://casting-api-elin92.herokuapp.com/movies \
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
+```
+{
+    "movies": [
+        {
+            "actors_id": [
+                9
+            ],
+            "id": 8,
+            "release_date": "Wed, 22 May 2019 21:30:00 GMT",
+            "title": "m2"
+        },
+        ...
+        {
+            "actors_id": [
+                9,
+                12
+            ],
+            "id": 7,
+            "release_date": "Sat, 23 May 2020 21:30:00 GMT",
+            "title": "A great movie"
+        }
+    ],
+    "success": true,
+    "total_movies": 8
+}
+```
+
+### GET /movies/<int: movie_id>
+- General: Returns movie with the input id and a success flag.
+- Authorization: Assistant, Director, Producer
+- Example: 
+```
+curl https://casting-api-elin92.herokuapp.com/movies/11
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
+```
+{
+    "movie": {
+        "actors_id": [
+            9,
+            12
+        ],
+        "id": 7,
+        "release_date": "Sat, 23 May 2020 21:30:00 GMT",
+        "title": "modified title"
+    },
+    "success": true
+}
+```
+- Errors:
+    - 404: No movie with the input id is found
+
+### GET /movies/<int: actor_id>/actors
+- General: Returns all actors in the movie with the given movie id
+- Authorization: Assistant, Director, Producer
+- Example: 
+```
+curl https://casting-api-elin92.herokuapp.com/movies/8/actors \
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
+```
+{
+    "actors_id": [
+        9
+    ],
+    "success": true,
+    "total_actors": 1
+}
+```
+- Errors:
+    - 404: No movie with the input id is found
+
+### POST /movies
+- General: Creates a new movie into the database
+    - Input: JSON format:
+    ```
+    {
+        "title": "movie's title",
+        "release_date": "datetime without time zone " (follow "YYYY-MM-DDTHH:MM:SS.000Z format" or "YYYY/DD/MM")
+    }
+    ```
+    - Return: Info of created movie
+- Authorization: Producer
+- Example: 
+```
+curl -X POST https://casting-api-elin92.herokuapp.com/movies \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer {YOUR_TOKEN}' \
+    -d '{"title":"A great movie", "release_date":"2019-05-23T21:30:00.000Z"}'
+```
+```
+{
+    "create": {
+        "actors_id": [],
+        "id": 2,
+        "release_date": "Thu, 23 May 2019 21:30:00 GMT",
+        "title": "A great movie"
+    },
+    "success": true
+}
+```
+- Errors:
+    - 422: Unprocessable input:
+        - Invalid release_date: ```"-05-23T21:30:00.000Z"```, ```12345```
+        - Invalid title: ```12```
+
+### PATCH /movies/<int: movie_id>
+- General: Modify an existing movie in the database by the given id
+    - Input: JSON format (not all fields are neccessary):
+    ```
+    {
+        "title": "movie's title",
+        "release_date": "valid timestamp",
+        "actors": an array of actor id participating in this movie
+    }
+    ```
+    - Return: Info of modified actor
+- Authorization: Director, Producer
+- Example: 
+```
+curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
+     -H 'Content-Type: application/json' \
+     -H 'Authorization: Bearer {YOUR_TOKEN}' \
+     -d '{"title":"Modified title", "release_date":"2021.05.08", "actors":[3,5,6]}''
+```
+```
+{
+    "movie": {
+        "actors_id": [3, 5, 6],
+        "id": 1,
+        "release_date": "Sat, 08 May 2021 00:00:00 GMT",
+        "title": "Modified title"
+    },
+    "success": true
+}
+Now if we check movie #3 or #5 or #6, we can find that movie #1 is added into movie their "actors" field
+```curl https://casting-api-elin92.herokuapp.com/actors/1```
+```
+{
+    "actor": {
+        "age": 108,
+        "gender": "m",
+        "id": 3,
+        "movies": [
+----------->1
+        ],
+        "name": "An actor"
+    },
+    "success": true
+}
+```
+- Errors:
+    - 422: Unprocessable input:
+        - Invalid release_date: ```"-05-23T21:30:00.000Z"```, ```12345```
+        - Invalid title: ```12```
+    - 404: 
+        - movie with input id is not found
+
+
+### DELETE /movies/<int: movie_id>
+- General: Delete an movie with the given id and return the deleted id
+    - Note: If the movie is in the list of certain actors' "movies" list, the movie will be automatically removed from list.
+- Authorization:  Producer
+- Example: Delete movie #1
+```
+curl -X DELETE https://casting-api-elin92.herokuapp.com/movies/1 \
+     -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
+```
+{
+    "delete": 1,
+    "success": true
+}
+```
+Now we get ```/actor/3``` (where it contained ***movie #1*** but now has been removed)
+```
+{
+    "actor": {
+        "age": 108,
+        "gender": "m",
+        "id": 3,
+------->"movies": [],
+        "name": "An actor"
+    },
+    "success": true
+}
+```
+- Errors:
+    - 404: No actor with the input id
 
 
 ## Error handling
+Errors are returned in JSON format:
+```
+{
+    "success": False, 
+    "error": 400,
+    "message": "bad request"
+}
+```
+The API supports two types of status code
+- 404: Data not found
+- 422: Unproccessable
+- 400: Bad request
+- 401: Unauthorized
+- 403: Invalid token
+- 500: Internal error
