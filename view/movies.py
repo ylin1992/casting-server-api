@@ -14,7 +14,8 @@ def get_movies(jwt):
         abort(404)
     return jsonify({
             'success': True,
-            'movies': [m.format() for m in movies]
+            'movies': [m.format() for m in movies],
+            'total_movies': len(movies)
         })
 
 @movies_route.route('/<int:movie_id>', methods=['GET'])
@@ -56,12 +57,22 @@ def patch_movie(jwt, movie_id):
     
     try:
         for k in data:
-            if k not in ['title', 'release_date']:
+            if k == 'actors':
+                movie.actors = []
+                for actor_id in data[k]:
+                    actor = Actor.query.filter_by(id=actor_id).one_or_none()
+                    if actor is None:
+                        abort(400)
+                    else:
+                        movie.actors.append(actor)
+                
+            elif k not in ['title', 'release_date']:
                 abort(400)
             else:
                 setattr(movie, k, data[k])
         movie.update()
     except Exception as e:
+        print(e)
         abort(400)
     
     return jsonify({
@@ -83,7 +94,8 @@ def get_actors_by_movie_id(jwt, movie_id):
     
     return jsonify({
         "success": True,
-        "actors_id": actors
+        "actors_id": actors,
+        "total_actors": len(actors)
     })
     
 @movies_route.route('', methods=['POST'])

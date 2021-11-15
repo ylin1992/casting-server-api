@@ -14,7 +14,8 @@ def get_actors(jwt):
         abort(404)
     return jsonify({
             'success': True,
-            'actors': [actor.format() for actor in actors]
+            'actors': [actor.format() for actor in actors],
+            'total_actors': len(actors)
         })
 
 @actors_route.route('/<int:actor_id>', methods=['GET'])
@@ -125,5 +126,6 @@ def get_movies_by_actor_id(jwt, actor_id):
     
     return jsonify({
         "success": True,
-        "movies_id": movies
+        "movies_id": movies,
+        "total_movies": len(movies)
     })
