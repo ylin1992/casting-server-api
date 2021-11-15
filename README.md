@@ -591,14 +591,14 @@ and found that Johnny Depp is #11
 
 He might also want to know the ID of the newly created movie, so he calls:
 ```
-curl https://casting-api-elin92.herokuapp.com/movies/8/actors \
+curl https://casting-api-elin92.herokuapp.com/movies \
     -H 'Authorization: Bearer {YOUR_TOKEN}'
 ```
 and found that the Pirates of the Caribbean 6 is #9
 
 Perfect, so now he is able to assign Johnny Depp and other actors he finds suitable into this movie, he calls:
 ```
-curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
+curl -X PATCH https://casting-api-elin92.herokuapp.com/movies/9 \
      -H 'Content-Type: application/json' \
      -H 'Authorization: Bearer {YOUR_TOKEN}' \
      -d '{"actors":[1,3,11]}''
