@@ -38,7 +38,11 @@ The app is hosted on Heroku, base url: [https://casting-api-elin92.herokuapp.com
 ### GET /actors
 - General: Returns all actors, a success flag and number of total actors.
 - Authorization: Assistant, Director, Producer
-- Example: ```curl https://casting-api-elin92.herokuapp.com/actors```
+- Example: 
+```
+curl https://casting-api-elin92.herokuapp.com/actors \
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
 ```
 {
     "actors": [
@@ -68,7 +72,11 @@ The app is hosted on Heroku, base url: [https://casting-api-elin92.herokuapp.com
 ### GET /actors/<int: actor_id>
 - General: Returns actor with the input id and a success flag.
 - Authorization: Assistant, Director, Producer
-- Example: ```curl https://casting-api-elin92.herokuapp.com/actors/11```
+- Example: 
+```
+curl https://casting-api-elin92.herokuapp.com/actors/11
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
 ```
 {
     "actor": {
@@ -89,7 +97,11 @@ The app is hosted on Heroku, base url: [https://casting-api-elin92.herokuapp.com
 ### GET /actors/<int: actor_id>/movies
 - General: Returns movies that the actor with the input id particpates in
 - Authorization: Assistant, Director, Producer
-- Example: ```curl https://casting-api-elin92.herokuapp.com/actors/11/movies```
+- Example: 
+```
+curl https://casting-api-elin92.herokuapp.com/actors/11/movies
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
 ```
 {
     "movies_id": [
@@ -175,7 +187,10 @@ curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
     "success": true
 }
 Now if we check movie #8, we can find that actor #11 is added into movie #8's "actors" field
-```curl https://casting-api-elin92.herokuapp.com/actors/8```
+```
+curl https://casting-api-elin92.herokuapp.com/actors/8
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
 ```
 {
     "movie": {
@@ -376,8 +391,12 @@ curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
     },
     "success": true
 }
+```
 Now if we check movie #3 or #5 or #6, we can find that movie #1 is added into movie their "actors" field
-```curl https://casting-api-elin92.herokuapp.com/actors/1```
+```
+curl https://casting-api-elin92.herokuapp.com/actors/1
+    -H 'Authorization: Bearer {YOUR_TOKEN}'
+```
 ```
 {
     "actor": {
