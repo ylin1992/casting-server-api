@@ -1,5 +1,6 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import Column, String, create_engine, Integer, DateTime, ForeignKey, Table
+from sqlalchemy import create_engine, inspect
 from config import SQLALCHEMY_DATABASE_URI
 import datetime
 
@@ -10,8 +11,12 @@ def setup_db(app, database_path=SQLALCHEMY_DATABASE_URI):
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.app = app
     db.init_app(app)   
-    with app.app_context():
-        preload_data(db) 
+    # comment these two lines when migrating db
+    engine = create_engine(database_path)
+    insp = inspect(engine)
+    if insp.has_table("Gender"):
+        with app.app_context():
+            preload_data(db) 
     return db
 
 def preload_data(db):
@@ -38,7 +43,6 @@ actors_movies = Table('actors_movies',
                       Column('actor_id', Integer, ForeignKey('Actor.id', ondelete='cascade'), primary_key=True),
                       Column('movie_id', Integer, ForeignKey('Movie.id', ondelete='cascade'), primary_key=True),
                       )
-
 class Gender(db.Model):
     # Pre-defined gender
     __tablename__ = 'Gender'
@@ -136,3 +140,5 @@ class Actor(db.Model):
         return str(self.format())
     
 # print('metadat from models: ', db.metadata.tables)
+
+
