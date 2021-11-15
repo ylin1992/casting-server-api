@@ -1,8 +1,8 @@
 # Casting-Agency API
 The project provides a backend service where users are allowed to add, delete, check and modify actors and movies based on their authorities.
 1. The service and database are hosted on Heroku, the base endpoint is [https://casting-api-elin92.herokuapp.com](https://casting-api-elin92.herokuapp.com)
-2. The authentication is provided by Auth0, for more detail, please refer to "Authentication" session.
-3. The app can also run on local server, for more detail, please refer to "Running on local server" session.
+2. The authentication is provided by Auth0, for more detail, please refer to [Authentication](#Authentication) session.
+3. The app can also run on local server, for more detail, please refer to [Running on local server](#Running-on-local-server) session.
 
 # API References
 
