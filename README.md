@@ -1,16 +1,20 @@
 # Casting-Agency API
 The project provides a backend service where users are allowed to add, delete, check and modify actors and movies based on their authorities.
-1. The service and database are hosted on Heroku, the base endpoint is [https://casting-api-elin92.herokuapp.com](https://casting-api-elin92.herokuapp.com)
-2. The authentication is provided by Auth0, for more detail, please refer to [Authentication](#Authentication) session.
-3. The app can also run on local server, for more detail, please refer to [Running on local server](#Running-on-local-server) session.
+1. The service and database are hosted on Heroku, where the base endpoint is [https://casting-api-elin92.herokuapp.com](https://casting-api-elin92.herokuapp.com)
+2. The authentication is provided by Auth0, for more detail, please refer to the [Authentication](#Authentication) session.
+3. The app can also be run locally, for more detail, please refer to the [Running on local server](#Running-on-local-server) session.
 
 # API References
+- [Authentication](#Authentication)
+- Endpoints
+    - [Endpoints - Actors](#Endpoints---Actors)
+    - [Endpoints - Movies](#Endpoints---Movies)
 
 ## Authentication
-The API is hosted by an athentication basis, which means all operations and requests have to be bundled with an authorized token
+The API is hosted on an athentication basis, which means all operations and requests have to be bundled with an authorized token
 
 ### Authorization
-There are 3 level of authority:
+There are 3 level of authorities:
 - **Assistant**: 
     - Can view information of actors and movies
 - **Director**: 
@@ -21,13 +25,13 @@ There are 3 level of authority:
     - All permissions director has
 
 ### Get a token
-1. Visit [login URL](https://dev-artpgixt.us.auth0.com/authorize?audience=casting-api&response_type=token&client_id=vrDoSPpPqVtxnIRlOQDk7FH8UJsTSPLB&redirect_uri=https://casting-api-elin92.herokuapp.com/callback)
+1. Visit the [login URL](https://dev-artpgixt.us.auth0.com/authorize?audience=casting-api&response_type=token&client_id=vrDoSPpPqVtxnIRlOQDk7FH8UJsTSPLB&redirect_uri=https://casting-api-elin92.herokuapp.com/callback)
 2. Login with your user email and password (or sign up a new user account)
 3. If your login is complete, your will be redireced to a page showing your web token
 4. Copy your web token for your future reuqests
 
 ### Notice
-1. The token will be valid for 1 day, be sure to login again to extend your permissions.
+1. The token is only valid for 1 day, be sure to login again to extend your permissions.
 2. By default, you **will not be granted any permissions**, contact us to get your account upgraded.
 
 ## Base URL 
@@ -187,7 +191,7 @@ curl -X PATCH https://casting-api-elin92.herokuapp.com/actors/ \
     "success": true
 }
 ```
-Now if we check movie #8, we can find that actor #11 is added into movie #8's "actors" field
+Now if we check movie #8, we can find that actor #11 is added into movie #8's "actors_id" field
 ```
 curl https://casting-api-elin92.herokuapp.com/actors/8
     -H 'Authorization: Bearer {YOUR_TOKEN}'
@@ -218,7 +222,7 @@ curl https://casting-api-elin92.herokuapp.com/actors/8
 
 ### DELETE /actors/<int: actor_id>
 - General: Delete an actor with the given id and return the deleted id
-    - Note: If the actor is in the list of certain movies' "actors" list, the actor will be automatically removed from them.
+    - Note: If the actor is in the list of certain movies' "actors_id" list, the actor will be automatically removed from them.
 - Authorization:  Director, Producer
 - Example: Delete actor #11
 ```
